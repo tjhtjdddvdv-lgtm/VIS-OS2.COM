@@ -1,0 +1,36 @@
+name: Build VIS OS UEFI ISO
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'boot/uefi/**'
+      - '.github/workflows/build-vis-os-uefi.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-uefi-iso:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Install UEFI build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc binutils make gnu-efi dosfstools mtools xorriso
+      - name: Build UEFI application and ISO
+        run: make -C boot/uefi clean all
+      - name: Check generated image
+        run: |
+          test -s boot/uefi/build/VIS-OS-UEFI-x86_64.iso
+          file boot/uefi/build/VIS-OS-UEFI-x86_64.iso
+          xorriso -indev boot/uefi/build/VIS-OS-UEFI-x86_64.iso -report_el_torito plain
+      - name: Upload ISO artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: VIS-OS-UEFI-x86_64
+          path: boot/uefi/build/VIS-OS-UEFI-x86_64.iso
+          if-no-files-found: error
+          retention-days: 30
