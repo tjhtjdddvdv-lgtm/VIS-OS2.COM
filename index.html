@@ -12,6 +12,45 @@
 
 /* Stage 107: live interactive site preview */
 .demo-shell{border:1px solid #34364d;border-radius:22px;overflow:hidden;background:linear-gradient(145deg,#111522,#090b13);box-shadow:0 25px 80px #0007}.demo-top{display:flex;align-items:center;gap:12px;padding:16px 19px;border-bottom:1px solid #ffffff14;background:#ffffff04}.demo-top strong{font-size:12px;letter-spacing:.12em}.demo-top small{color:#9ba2bd;font-size:11px}.demo-top .spacer{flex:1}.demo-online{font-size:10px;color:#9dffd0}.demo-grid{display:grid;grid-template-columns:200px 1fr;min-height:320px}.demo-side{padding:20px 13px;border-right:1px solid #ffffff12;background:#ffffff02}.demo-side button{width:100%;text-align:left;border:1px solid transparent;border-radius:10px;padding:10px;color:#aab0c8;background:transparent;cursor:pointer;margin-bottom:5px}.demo-side button.active,.demo-side button:hover{color:#fff;background:#a996ff16;border-color:#a996ff35}.demo-side button span{display:inline-block;width:27px;color:#9cefff}.demo-main{padding:25px;min-width:0}.demo-main h3{font-size:clamp(20px,3vw,30px);letter-spacing:-.04em;margin:0 0 6px}.demo-main p{font-size:13px;color:#a1a6bc;margin:0;max-width:600px}.demo-apps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:24px}.demo-app{border:1px solid #ffffff15;border-radius:14px;background:#ffffff04;color:#f6f6ff;padding:15px 10px;text-align:left;cursor:pointer;min-width:0;transition:.18s}.demo-app:hover,.demo-app:focus-visible{transform:translateY(-3px);border-color:#9d8cff80;background:#a996ff0d;outline:none}.demo-app .appicon{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;background:#a996ff18;color:#c8bdff;font-size:20px;margin-bottom:12px}.demo-app b{display:block;font-size:12px;overflow-wrap:anywhere}.demo-app small{display:block;color:#9299b3;font-size:10px;margin-top:3px}.demo-note{font-size:11px;color:#7f87a2;margin-top:18px}.demo-dialog{position:fixed;inset:0;z-index:100;display:none;place-items:center;padding:20px;background:#03040bd9;backdrop-filter:blur(12px)}.demo-dialog.open{display:grid}.demo-window{width:min(520px,100%);border:1px solid #a996ff5c;border-radius:20px;background:#111421;box-shadow:0 35px 120px #000b;overflow:hidden}.demo-window-head{display:flex;align-items:center;justify-content:space-between;padding:16px 19px;border-bottom:1px solid #ffffff14}.demo-window-head strong{font-size:13px}.demo-close{width:32px;height:32px;border-radius:9px;border:1px solid #ffffff20;background:#ffffff08;color:#fff;cursor:pointer}.demo-window-body{padding:22px}.demo-window-body p{color:#b2b7cc;font-size:13px}.demo-window-body input,.demo-window-body textarea{width:100%;padding:12px;border:1px solid #34384f;border-radius:10px;background:#080b13;color:white;margin:8px 0;font:inherit}.demo-window-body textarea{min-height:110px;resize:vertical}.demo-output{padding:12px;border:1px solid #ffffff12;background:#ffffff05;border-radius:10px;color:#c4c9df;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}.demo-window-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}@media(max-width:650px){.demo-grid{grid-template-columns:1fr}.demo-side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;border-right:0;border-bottom:1px solid #ffffff12;padding:10px}.demo-side button{margin:0;font-size:11px}.demo-main{padding:18px}.demo-apps{grid-template-columns:repeat(2,minmax(0,1fr))}.demo-top{padding:13px}.demo-online{display:none}}
+
+/* VIS OS visual redesign: stronger hierarchy, richer Aurora glow, more depth */
+:root{--bg:#070812;--panel:#111321;--line:#2b2e48;--violet:#b5a4ff;--cyan:#73f2ff}
+body:before{opacity:.9;background:radial-gradient(ellipse at 75% 5%,#7b5cff36,transparent 34%),radial-gradient(ellipse at 8% 40%,#00d9ff17,transparent 30%),radial-gradient(ellipse at 52% 80%,#5630a510,transparent 38%),linear-gradient(#ffffff06 1px,transparent 1px),linear-gradient(90deg,#ffffff06 1px,transparent 1px);background-size:auto,auto,auto,42px 42px,42px 42px}
+.nav{height:86px;border-bottom-color:#9d9bff20}.mark{width:43px;height:43px;border-radius:15px;box-shadow:0 0 35px #9d8cff55, inset 0 1px #ffffff80}
+.brand{letter-spacing:.15em}.navlinks a{transition:color .2s}
+.hero{min-height:690px;padding-top:78px;padding-bottom:88px;gap:25px}
+.hero .copy{position:relative;z-index:2}
+.hero h1{font-size:clamp(56px,7.4vw,100px);letter-spacing:-.085em;line-height:.91;margin:26px 0}
+.hero h1 span{background-image:linear-gradient(100deg,#c8bbff 0%,#9eafff 42%,#70f0ff 100%);filter:drop-shadow(0 0 26px #8d7dff2a)}
+.hero p{font-size:18px;max-width:510px;color:#c0c3d8;line-height:1.75}
+.eyebrow{letter-spacing:.24em}
+.btn{padding:14px 20px;border-radius:13px;box-shadow:0 0 0 1px #ffffff03 inset}
+.primary{box-shadow:0 8px 32px #8b7aff28;color:#090b14}
+.scene{min-height:510px;perspective:1200px}
+.orb{width:390px;height:390px;background:radial-gradient(circle at 35% 28%,#b7a1ff70,transparent 55%),radial-gradient(circle at 65% 68%,#42e8ff42,transparent 58%);filter:blur(17px);animation:auroraPulse 7s ease-in-out infinite alternate}
+.ring{width:465px;height:185px;border-color:#b3a2ff70;box-shadow:0 0 25px #8d79ff12}
+.ring.r2{width:500px;height:225px;border-color:#79edff4a}
+.ring.r3{width:370px;height:370px;border-color:#ffffff20}
+.mock{width:min(100%,455px);border-radius:25px;background:linear-gradient(145deg,#20233a,#0a0c17 72%);border-color:#c4bdff65;box-shadow:0 40px 110px #000c,0 0 75px #9682ff22;transform:perspective(1000px) rotateY(-8deg) rotateX(2deg);transition:transform .45s}
+.scene:hover .mock{transform:perspective(1000px) rotateY(-2deg) rotateX(0deg) translateY(-5px)}
+.mockbody{min-height:255px}.tile{height:82px;border-color:#a5a8ff1c;background:linear-gradient(135deg,#ffffff0d,#8c80ff05)}
+.tile i{font-size:20px;text-shadow:0 0 16px #73efff50}
+.float{border-color:#aaa4ff42;background:#121525f2;box-shadow:0 20px 60px #0009,0 0 30px #8f7cff0c}
+.f1{right:-12px}.f2{left:-15px}
+.section{padding:92px 0}
+.sectionhead h2{font-size:clamp(34px,4.4vw,55px);letter-spacing:-.065em}
+.sectionhead p{font-size:15px;line-height:1.8}
+.card{position:relative;overflow:hidden;min-height:275px;padding:26px;border-radius:22px;background:linear-gradient(145deg,#171a2b,#0b0d17 80%);border-color:#ffffff18;box-shadow:0 18px 55px #0002}
+.card:before{content:"";position:absolute;top:0;left:22px;right:22px;height:1px;background:linear-gradient(90deg,transparent,#a996ff80,#85efff70,transparent);opacity:.6}
+.card:hover{transform:translateY(-6px);border-color:#aaa0ff70;box-shadow:0 25px 65px #0005,0 0 35px #9b88ff0b}
+.ico{width:48px;height:48px;border-radius:15px;background:linear-gradient(145deg,#a996ff24,#85efff0c);box-shadow:inset 0 1px #ffffff18}
+.statusrow,.step{background:linear-gradient(120deg,#ffffff06,#ffffff02);border-color:#ffffff18}
+.cta{border-color:#9e91ff55;background:radial-gradient(ellipse at 90% 0,#7162ff38,transparent 48%),linear-gradient(120deg,#151729,#0b0d17);box-shadow:0 25px 75px #0004}
+.footer{border-top-color:#ffffff18}
+@keyframes auroraPulse{from{transform:scale(.94);opacity:.72}to{transform:scale(1.08);opacity:1}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+@media(max-width:800px){.hero{min-height:auto;padding-top:58px;padding-bottom:45px}.scene{min-height:440px}.hero h1{font-size:clamp(54px,10vw,78px)}.section{padding:68px 0}}
+@media(max-width:560px){.nav{height:72px}.hero{padding-top:45px}.hero h1{font-size:clamp(48px,13vw,68px)}.hero p{font-size:15px}.scene{min-height:360px}.mock{transform:none}.orb{width:270px;height:270px}.ring{width:320px;height:130px}.ring.r2{width:350px;height:155px}.ring.r3{width:270px;height:270px}.f1{right:-2px}.f2{left:-2px}.section{padding:58px 0}}
 </style></head>
 <body>
 <header class="wrap nav"><a class="brand" href="#top"><span class="mark">V</span><span>VIS OS<small>AN INDEPENDENT OS PROJECT</small></span></a><nav class="navlinks" id="navlinks"><a href="#vision" data-t="navVision">Видение</a><a href="#features" data-t="navFeatures">Возможности</a><a href="#live-demo">Live demo</a><a href="#status" data-t="navStatus">Статус</a><a href="#downloads" data-t="navDownloads">Загрузки</a><a href="roadmap.html">Roadmap ↗</a></nav><div class="navright"><select class="lang" id="lang" aria-label="Language"><option value="ru">RU</option><option value="en">EN</option><option value="nl">NL</option></select><button class="menubtn" id="menubtn" aria-label="Open menu">☰</button></div></header>
