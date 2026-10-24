@@ -1,41 +1,42 @@
-# VISCRAFT 4.1 — VIS OS Universe
+# VISCRAFT 4.2 — VIS OS Universe
 
-VISCRAFT is a browser-based block-world prototype with an Aurora-inspired interface.
+Браузерная блочная песочница в визуальном стиле VIS OS Aurora.
 
-## Features in this build
-- Three.js 3D scene, deterministic procedural terrain, trees, water and ore blocks.
-- Mining, placing blocks, hotbar, health, hunger, XP and simple hostile mobs.
-- Local save/load in the browser; automatic save approximately every 25 seconds while playing.
-- Crafting panel (**B**) with resource checks, plus quick recipes (**C** for planks, **V** for a brick).
-- World chat (**T**) and a WebSocket relay client for player positions and block changes.
-- Keyboard/mouse controls and basic mobile movement buttons.
+## Что есть
+- 3D-мир на Three.js: процедурные холмы, деревья, вода и руды.
+- Добыча и установка блоков, панель быстрого доступа, здоровье, голод, опыт, цикл дня/ночи и простые враждебные мобы.
+- Сохранение мира в текущем браузере и автосохранение во время игры.
+- Окно рецептов (**B**), быстрые рецепты (**C** — доски, **V** — кирпич).
+- Клиентский чат (**T**) и базовый WebSocket relay для сообщений игроков, позиций и блоков.
+- Компьютер: WASD/стрелки, мышь, Space, ЛКМ/ПКМ.
+- Телефон/планшет: экранные кнопки движения, прыжка, добычи, установки блока и крафта; свайп по игровому полю меняет направление обзора.
 
-## Run on Windows 10/11
-1. Install Node.js 18 or newer.
-2. Open a terminal in the `VISCRAFT` folder.
-3. Run `npm install`.
-4. Run `npm start`.
-5. Open `http://localhost:3000`.
+## Запуск в Windows 10/11
+1. Установи Node.js 18 или новее.
+2. Открой терминал в папке `VISCRAFT`.
+3. Выполни `npm install`.
+4. Выполни `npm start`.
+5. Открой `http://localhost:3000`.
 
-The Three.js module is loaded from jsDelivr, so an internet connection is required unless you vendor the library locally. Saves stay in the current browser profile.
+Three.js загружается с jsDelivr, поэтому нужен интернет. Для запуска через `file://` модуль Three.js может не загрузиться — запускай через локальный сервер.
 
-## Controls
-- **WASD / arrow keys** — move
-- **Mouse** — look around; click the canvas to capture the pointer
-- **Space** — jump
-- **Left mouse button** — mine the targeted block
-- **Right mouse button** — place the selected block
-- **1–8 / mouse wheel** — select a hotbar slot
-- **E** — eat food
-- **B** — open crafting
-- **C** — craft 4 planks from 1 wood
-- **V** — craft 1 brick from 2 stone
-- **T** — open world chat; Enter sends a message
-- **Q** — save
-- **Esc** — release pointer / pause
+## Управление
+- **WASD / стрелки** — движение
+- **Мышь** — обзор; нажми «Играть», чтобы захватить курсор
+- **Space** — прыжок
+- **ЛКМ** — добыча блока
+- **ПКМ** — установка выбранного блока
+- **1–8 / колесо мыши** — выбрать слот
+- **E** — съесть еду
+- **B** — открыть создание предметов
+- **C** — 4 доски из 1 дерева
+- **V** — 1 кирпич из 2 камней
+- **T** — чат
+- **Q** — сохранить мир
+- **Esc** — пауза / освобождение курсора
 
-## Multiplayer status
-The browser client can connect to the Node.js WebSocket relay for player-position, chat and block-change messages. This is a basic relay, not a finished authoritative multiplayer engine: world snapshots, conflict resolution, anti-cheat and reliable reconnect handling are not implemented. For public multiplayer, deploy the Node server on a host that supports persistent WebSocket connections. GitHub Pages can host only the static client.
+## Мультиплеер и ограничения
+Клиент передаёт позиции, чат и изменения блоков Node.js WebSocket-серверу. Это базовый relay, а не завершённый сервер Minecraft: полноценная синхронизация сохранений, авторитетная физика, устранение конфликтов блоков и устойчивое переподключение ещё не реализованы. Для сетевой игры сервер нужно разместить на хостинге с постоянными WebSocket-соединениями. GitHub Pages обслуживает только статическую страницу.
 
-## Known prototype limits
-This build has not yet been validated in a real browser across devices. Collision and mob AI are lightweight, and mobile support currently provides basic movement controls rather than full touch-look controls. Treat it as an active prototype, not a finished Minecraft replacement.
+## Честный статус
+JavaScript клиента проверен на синтаксическую корректность, но полноценный запуск в браузере и проверка на физических устройствах ещё не выполнены. Физика столкновений и ИИ мобов остаются упрощёнными. Мобильное управление базовое, а не полноценный виртуальный аналоговый джойстик.
