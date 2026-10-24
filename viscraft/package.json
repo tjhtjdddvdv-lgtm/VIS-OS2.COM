@@ -1,0 +1,17 @@
+{
+  "name": "viscraft-aurora",
+  "version": "0.4.0",
+  "private": true,
+  "description": "VISCRAFT 0.4 — VIS OS browser voxel game and multiplayer server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
