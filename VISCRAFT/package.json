@@ -1,0 +1,15 @@
+{
+  "name": "viscraft-4",
+  "version": "4.0.0",
+  "private": true,
+  "description": "VISCRAFT 4.0 browser sandbox and optional WebSocket room server",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
