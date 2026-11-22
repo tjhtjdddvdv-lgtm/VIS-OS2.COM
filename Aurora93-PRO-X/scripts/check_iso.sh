@@ -1,25 +1,61 @@
 #!/usr/bin/env bash
 set -euo pipefail
-if [[ $# -ne 1 ]]; then
+
+usage() {
   echo "Usage: $0 path/to/image.iso" >&2
   exit 2
-fi
+}
+
+[[ $# -eq 1 ]] || usage
 iso="$1"
-[[ -f "$iso" ]] || { echo "ISO not found: $iso" >&2; exit 1; }
-command -v xorriso >/dev/null || { echo "xorriso is required" >&2; exit 1; }
+[[ -f "$iso" ]] || { echo "ERROR: ISO not found: $iso" >&2; exit 1; }
+
+for cmd in xorriso objdump file; do
+  command -v "$cmd" >/dev/null 2>&1 || {
+    echo "ERROR: required command is missing: $cmd" >&2
+    exit 1
+  }
+done
+
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
-echo "== File =="
+
+printf '%s\n' '== ISO file =='
 file "$iso"
-echo "== El Torito boot report =="
-xorriso -indev "$iso" -report_el_torito plain 2>&1 || true
-echo "== EFI fallback files =="
-xorriso -osirrox on -indev "$iso" -extract /EFI "$tmp/EFI" >/dev/null 2>&1 || true
-for f in "$tmp/EFI/BOOT/BOOTIA32.EFI" "$tmp/EFI/BOOT/BOOTX64.EFI"; do
-  if [[ -f "$f" ]]; then
-    printf '[FOUND] %s\n' "${f##*/}"
-    file "$f"
-  else
-    printf '[MISSING] %s\n' "${f##*/}"
+
+printf '%s\n' '== El Torito boot entries =='
+if ! xorriso -indev "$iso" -report_el_torito plain >"$tmp/el-torito.txt" 2>&1; then
+  cat "$tmp/el-torito.txt" >&2
+  echo "ERROR: xorriso could not read the El Torito catalog" >&2
+  exit 1
+fi
+cat "$tmp/el-torito.txt"
+
+if ! grep -Eiq 'Platform id[[:space:]]*:[[:space:]]*0x00' "$tmp/el-torito.txt"; then
+  echo "ERROR: Legacy BIOS El Torito entry (platform 0x00) was not found" >&2
+  exit 1
+fi
+if ! grep -Eiq 'Platform id[[:space:]]*:[[:space:]]*0xEF' "$tmp/el-torito.txt"; then
+  echo "ERROR: UEFI El Torito entry (platform 0xEF) was not found" >&2
+  exit 1
+fi
+
+printf '%s\n' '== EFI fallback executable architecture =='
+for spec in 'BOOTIA32.EFI:pei-i386' 'BOOTX64.EFI:pei-x86-64'; do
+  name="${spec%%:*}"
+  expected="${spec#*:}"
+  extracted="$tmp/$name"
+  if ! xorriso -osirrox on -indev "$iso" -extract "/EFI/BOOT/$name" "$extracted" >/dev/null 2>&1; then
+    echo "ERROR: missing or unreadable /EFI/BOOT/$name" >&2
+    exit 1
   fi
+  format="$(objdump -f "$extracted" 2>/dev/null | awk '/file format/ {print $NF; exit}')"
+  if [[ "$format" != "$expected" ]]; then
+    echo "ERROR: $name has format '${format:-unknown}', expected '$expected'" >&2
+    file "$extracted" >&2 || true
+    exit 1
+  fi
+  printf '[OK] %s: %s\n' "$name" "$format"
 done
+
+printf '%s\n' 'PASS: ISO contains BIOS + UEFI El Torito entries and correctly typed IA32/x86-64 EFI fallback binaries.'
