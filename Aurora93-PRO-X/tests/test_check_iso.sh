@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-script_dir="$(cd -- "$(dirname -- "\${BASH_SOURCE[0]}")" && pwd)"
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 checker="$script_dir/../scripts/check_iso.sh"
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
@@ -14,15 +14,15 @@ cat > "$mockbin/xorriso" <<'MOCK'
 set -euo pipefail
 for arg in "$@"; do
   if [[ "$arg" == "-report_el_torito" ]]; then
-    printf '%s\n' "\${MOCK_ELTORITO_REPORT:-}"
+    printf '%s\n' "${MOCK_ELTORITO_REPORT:-}"
     exit 0
   fi
 done
 for arg in "$@"; do
   if [[ "$arg" == "-extract" ]]; then
-    destination="\${@: -1}"
-    filename="\${destination##*/}"
-    if [[ "\${MOCK_MISSING_FILE:-}" == "$filename" ]]; then
+    destination="${@: -1}"
+    filename="${destination##*/}"
+    if [[ "${MOCK_MISSING_FILE:-}" == "$filename" ]]; then
       exit 1
     fi
     printf 'mock EFI payload: %s\n' "$filename" > "$destination"
@@ -35,8 +35,8 @@ MOCK
 cat > "$mockbin/objdump" <<'MOCK'
 #!/usr/bin/env bash
 set -euo pipefail
-filename="\${@: -1}"
-case "\${MOCK_WRONG_ARCH:-}:$filename" in
+filename="${@: -1}"
+case "${MOCK_WRONG_ARCH:-}:$filename" in
   BOOTIA32.EFI:*) format="pei-x86-64" ;;
   BOOTX64.EFI:*) format="pei-i386" ;;
   *:*)
@@ -52,7 +52,7 @@ MOCK
 
 cat > "$mockbin/file" <<'MOCK'
 #!/usr/bin/env bash
-printf 'mock file: %s\n' "\${@: -1}"
+printf 'mock file: %s\n' "${@: -1}"
 MOCK
 chmod +x "$mockbin/xorriso" "$mockbin/objdump" "$mockbin/file"
 
@@ -60,9 +60,9 @@ valid_report=$'El Torito images   :   N  Pltf  B  Emul  Ld_seg  Hdpt  Ldsiz  LBA
 
 run_checker() {
   env PATH="$mockbin:$PATH" \
-    MOCK_ELTORITO_REPORT="\${MOCK_ELTORITO_REPORT:-}" \
-    MOCK_WRONG_ARCH="\${MOCK_WRONG_ARCH:-}" \
-    MOCK_MISSING_FILE="\${MOCK_MISSING_FILE:-}" \
+    MOCK_ELTORITO_REPORT="${MOCK_ELTORITO_REPORT:-}" \
+    MOCK_WRONG_ARCH="${MOCK_WRONG_ARCH:-}" \
+    MOCK_MISSING_FILE="${MOCK_MISSING_FILE:-}" \
     bash "$checker" "$tmp/test.iso"
 }
 
