@@ -10,7 +10,7 @@ usage() {
 iso="$1"
 [[ -f "$iso" ]] || { echo "ERROR: ISO not found: $iso" >&2; exit 1; }
 
-for cmd in xorriso objdump file; do
+for cmd in xorriso objdump file grep awk; do
   command -v "$cmd" >/dev/null 2>&1 || {
     echo "ERROR: required command is missing: $cmd" >&2
     exit 1
@@ -31,27 +31,31 @@ if ! xorriso -indev "$iso" -report_el_torito plain >"$tmp/el-torito.txt" 2>&1; t
 fi
 cat "$tmp/el-torito.txt"
 
-if ! grep -Eiq 'Platform id[[:space:]]*:[[:space:]]*0x00' "$tmp/el-torito.txt"; then
+# xorriso's plain report labels entries as BIOS/UEFI in the
+# "El Torito boot img" rows. Accept the explicit PlatformId form too.
+if ! grep -Eiq '^El Torito boot img[[:space:]]*:[[:space:]]*[0-9]+[[:space:]]+BIOS([[:space:]]|$)|PlatformId:[[:space:]]*0x00([[:space:]]|$)' "$tmp/el-torito.txt"; then
   echo "ERROR: Legacy BIOS El Torito entry (platform 0x00) was not found" >&2
   exit 1
 fi
-if ! grep -Eiq 'Platform id[[:space:]]*:[[:space:]]*0xEF' "$tmp/el-torito.txt"; then
+if ! grep -Eiq '^El Torito boot img[[:space:]]*:[[:space:]]*[0-9]+[[:space:]]+UEFI([[:space:]]|$)|PlatformId:[[:space:]]*0xEF([[:space:]]|$)' "$tmp/el-torito.txt"; then
   echo "ERROR: UEFI El Torito entry (platform 0xEF) was not found" >&2
   exit 1
 fi
 
 printf '%s\n' '== EFI fallback executable architecture =='
 for spec in 'BOOTIA32.EFI:pei-i386' 'BOOTX64.EFI:pei-x86-64'; do
-  name="${spec%%:*}"
-  expected="${spec#*:}"
+  name="\${spec%%:*}"
+  expected="\${spec#*:}"
   extracted="$tmp/$name"
   if ! xorriso -osirrox on -indev "$iso" -extract "/EFI/BOOT/$name" "$extracted" >/dev/null 2>&1; then
     echo "ERROR: missing or unreadable /EFI/BOOT/$name" >&2
     exit 1
   fi
-  format="$(objdump -f "$extracted" 2>/dev/null | awk '/file format/ {print $NF; exit}')"
+  if ! format="$(objdump -f "$extracted" 2>/dev/null | awk '/file format/ {print $NF; exit}')"; then
+    format=""
+  fi
   if [[ "$format" != "$expected" ]]; then
-    echo "ERROR: $name has format '${format:-unknown}', expected '$expected'" >&2
+    echo "ERROR: $name has format '\${format:-unknown}', expected '$expected'" >&2
     file "$extracted" >&2 || true
     exit 1
   fi
