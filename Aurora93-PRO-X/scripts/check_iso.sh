@@ -44,8 +44,8 @@ fi
 
 printf '%s\n' '== EFI fallback executable architecture =='
 for spec in 'BOOTIA32.EFI:pei-i386' 'BOOTX64.EFI:pei-x86-64'; do
-  name="\${spec%%:*}"
-  expected="\${spec#*:}"
+  name="${spec%%:*}"
+  expected="${spec#*:}"
   extracted="$tmp/$name"
   if ! xorriso -osirrox on -indev "$iso" -extract "/EFI/BOOT/$name" "$extracted" >/dev/null 2>&1; then
     echo "ERROR: missing or unreadable /EFI/BOOT/$name" >&2
@@ -55,7 +55,7 @@ for spec in 'BOOTIA32.EFI:pei-i386' 'BOOTX64.EFI:pei-x86-64'; do
     format=""
   fi
   if [[ "$format" != "$expected" ]]; then
-    echo "ERROR: $name has format '\${format:-unknown}', expected '$expected'" >&2
+    echo "ERROR: $name has format '${format:-unknown}', expected '$expected'" >&2
     file "$extracted" >&2 || true
     exit 1
   fi
