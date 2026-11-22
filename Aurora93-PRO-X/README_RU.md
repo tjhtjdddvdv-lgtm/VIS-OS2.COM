@@ -31,6 +31,18 @@ apt-cache policy xorriso grub-common grub-pc-bin grub-efi-ia32-bin grub-efi-amd6
 
 Не начинайте сборку финального ISO, пока не подтверждены доступные EFI-бинарники.
 
+### Stage 105: аппаратный отчёт DIGMA
+
+Перед выбором EFI-загрузчика и профилей драйверов соберите read-only отчёт:
+
+~~~bash
+bash Aurora93-PRO-X/scripts/collect_hardware_report.sh
+bash Aurora93-PRO-X/tests/test_collect_hardware_report.sh
+~~~
+
+Скрипт не собирает serial number, UUID или MAC и не меняет eMMC/EFI.
+Описание: Aurora93-PRO-X/docs/HARDWARE_REPORT_RU.md.
+
 ### Stage 106: проверка самого ISO-валидатора
 
 Перед проверкой собранного образа запустите регрессионные тесты:
@@ -69,15 +81,3 @@ UEFI на этом этапе. Начинайте с Live USB и резервн�
 ### Ветка
 
 Рабочая бета-ветка: `beta/aurora-93-pro-x`.
-
-### Stage 105: аппаратный отчёт DIGMA
-
-Перед выбором EFI-загрузчика и профилей драйверов соберите read-only отчёт:
-
-~~~bash
-bash Aurora93-PRO-X/scripts/collect_hardware_report.sh
-bash Aurora93-PRO-X/tests/test_collect_hardware_report.sh
-~~~
-
-Скрипт не собирает serial number, UUID или MAC и не меняет eMMC/EFI.
-Описание: Aurora93-PRO-X/docs/HARDWARE_REPORT_RU.md.
