@@ -103,3 +103,16 @@ bash Aurora93-PRO-X/tests/test_plan_boot_path.sh
 Добавлены отрицательные тесты для поддельного заголовка, повторяющегося DMI-поля
 и пустого идентификатора производителя. Это проверка формата отчёта, а не доказательство
 подлинности аппаратных данных и не тест загрузки ISO.
+
+### Stage 109: диагностика датчика ориентации
+
+Read-only аппаратный отчёт Stage 105 теперь показывает IIO accelerometer-каналы X/Y/Z, доступные raw-значения, scale и mount matrix. Поле `rotation_ready=no` сохраняется до физической калибровки осей и проверки ориентации DIGMA Citi 1804.
+
+Проверка:
+
+```bash
+bash Aurora93-PRO-X/tests/test_collect_hardware_report.sh
+bash Aurora93-PRO-X/scripts/collect_hardware_report.sh VIS_OS_CITI1804_HARDWARE_REPORT.txt
+```
+
+Описание: `Aurora93-PRO-X/docs/ORIENTATION_SENSOR_DIAGNOSTICS_RU.md`. Отчёт не включает автоповорот и не доказывает наличие или работоспособность датчика на физическом устройстве.
