@@ -224,7 +224,7 @@ REPORT
 
 [Orientation / IIO sensors]
 REPORT
-  local sensor sensor_name axis channel axes sample scale mount_matrix
+  local sensor sensor_name axis channel axes sample scale mount_matrix axis_value
   found=0
   for sensor in "$SYS_ROOT"/bus/iio/devices/iio:device*; do
     [[ -d "$sensor" && -e "$sensor/name" ]] || continue
