@@ -15,8 +15,8 @@ System vendor: $vendor
 Product name: $product
 [UEFI]
 UEFI sysfs interface: $fw_iface
-Firmware architecture: $fw_arch
 REPORT
+ if [[ "$fw_iface" == present ]]; then printf 'Firmware architecture: %s\n' "$fw_arch" >> "$tmp/report.txt"; fi
 }
 bash -n "$planner"; bash -n "$script_dir/../scripts/check_build_environment.sh"
 printf '[PASS] shell syntax\n'
@@ -44,4 +44,22 @@ if bash "$planner" "$tmp/no-report" > "$tmp/m" 2>&1; then exit 1; fi
 grep -q 'missing or unreadable' "$tmp/m"; printf '[PASS] missing report rejected\n'
 if bash "$planner" > "$tmp/usage" 2>&1; then exit 1; fi
 grep -q 'Usage:' "$tmp/usage"; printf '[PASS] invalid invocation rejected\n'
+
+make_report present '64-bit x86-64' yes
+sed -i '1s/.*/Untrusted report/' "$tmp/report.txt"
+if bash "$planner" "$tmp/report.txt" > "$tmp/header" 2>&1; then exit 1; fi
+grep -q 'report signature does not match' "$tmp/header"
+printf '[PASS] non-Stage-105 report header rejected\n'
+
+make_report present '64-bit x86-64' yes
+printf 'Product name: OTHER DEVICE\n' >> "$tmp/report.txt"
+if bash "$planner" "$tmp/report.txt" > "$tmp/duplicate" 2>&1; then exit 1; fi
+grep -q "expected exactly one 'Product name' field, found 2" "$tmp/duplicate"
+printf '[PASS] duplicate identity field rejected\n'
+
+make_report present '64-bit x86-64' yes
+sed -i 's/^System vendor: DIGMA$/System vendor: /' "$tmp/report.txt"
+if bash "$planner" "$tmp/report.txt" > "$tmp/empty" 2>&1; then exit 1; fi
+grep -q "field 'System vendor' is empty" "$tmp/empty"
+printf '[PASS] empty identity field rejected\n'
 echo 'PASS: all boot-path planner regression tests passed.'
