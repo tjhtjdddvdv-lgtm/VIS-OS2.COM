@@ -224,13 +224,34 @@ REPORT
 
 [Orientation / IIO sensors]
 REPORT
-  local sensor sensor_name
+  local sensor sensor_name axis channel axes sample scale mount_matrix
   found=0
   for sensor in "$SYS_ROOT"/bus/iio/devices/iio:device*; do
-    [[ -e "$sensor/name" ]] || continue
+    [[ -d "$sensor" && -e "$sensor/name" ]] || continue
     found=1
     sensor_name="$(read_one "$sensor/name")"
-    printf '%s name=%s\n' "$(basename "$sensor")" "$(clean_value "$sensor_name")"
+    axes=""
+    sample=""
+    for axis in x y z; do
+      channel="$sensor/in_accel_"$axis"_raw"
+      if [[ -r "$channel" ]]; then
+        if [[ -n "$axes" ]]; then axes="$axes,"; fi
+        axes="$axes$axis"
+        axis_value="$(clean_value "$(read_one "$channel")")"
+        if [[ -n "$sample" ]]; then sample="$sample,"; fi
+        sample="$sample$axis:$axis_value"
+      fi
+    done
+    [[ -n "$axes" ]] || axes="none"
+    [[ -n "$sample" ]] || sample="not available"
+    scale="$(read_one "$sensor/in_accel_scale")"
+    mount_matrix="$(read_one "$sensor/in_accel_mount_matrix")"
+    if [[ "$mount_matrix" == "not available" ]]; then
+      mount_matrix="$(read_one "$sensor/mount_matrix")"
+    fi
+    printf '%s name=%s accel_axes=%s sample_raw=%s scale=%s mount_matrix=%s rotation_ready=no\n' \
+      "$(basename "$sensor")" "$(clean_value "$sensor_name")" "$axes" "$sample" \
+      "$(clean_value "$scale")" "$(clean_value "$mount_matrix")"
   done
   [[ "$found" -eq 1 ]] || printf '%s\n' 'No IIO sensor devices exposed.'
 
