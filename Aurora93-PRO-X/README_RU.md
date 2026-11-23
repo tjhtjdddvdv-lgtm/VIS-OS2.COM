@@ -35,15 +35,15 @@ apt-cache policy xorriso grub-common grub-pc-bin grub-efi-ia32-bin grub-efi-amd6
 
 Перед выбором EFI-загрузчика и профилей драйверов соберите read-only отчёт:
 
-~~~bash
+```bash
 bash Aurora93-PRO-X/scripts/collect_hardware_report.sh
 bash Aurora93-PRO-X/tests/test_collect_hardware_report.sh
-~~~
+```
 
 Скрипт не собирает serial number, UUID или MAC и не меняет eMMC/EFI.
 Описание: Aurora93-PRO-X/docs/HARDWARE_REPORT_RU.md.
 
-### Stage 106: проверка самого ISO-валидатора
+### Stage 106: проверка ISO-валидатора
 
 Перед проверкой собранного образа запустите регрессионные тесты:
 
@@ -51,18 +51,23 @@ bash Aurora93-PRO-X/tests/test_collect_hardware_report.sh
 bash Aurora93-PRO-X/tests/test_check_iso.sh
 ```
 
-Они проверяют, что валидатор принимает BIOS + UEFI записи и две правильные
-архитектуры EFI, а также отклоняет отсутствующую запись, отсутствующий файл
-и EFI-бинарник неверной архитектуры.
+Они проверяют BIOS + UEFI записи и архитектуры EFI на синтетических ответах.
+Они не заменяют проверку настоящего ISO.
 
-После этого проверяйте реальный образ:
+### Stage 107: Boot Architecture Gate
+
+После сбора аппаратного отчёта выполните:
 
 ```bash
-bash Aurora93-PRO-X/scripts/check_iso.sh /путь/к/образу.iso
+bash Aurora93-PRO-X/tests/test_plan_boot_path.sh
+bash Aurora93-PRO-X/scripts/check_build_environment.sh
+bash Aurora93-PRO-X/scripts/plan_boot_path.sh VIS_OS_CITI1804_HARDWARE_REPORT.txt
 ```
 
-Тесты используют имитацию xorriso/objdump и не заменяют проверку настоящего ISO.
-Для проверки образа нужны установленный xorriso и реально собранный файл ISO.
+Планировщик разрешает только выбор кандидата EFI-файла при одновременном подтверждении
+DMI DIGMA Citi 1804, CPU long mode и архитектуры UEFI. При IA32 UEFI 64-битное ядро
+остаётся заблокированным до аппаратной проверки mixed-mode. При неизвестной архитектуре
+прошивки выбор блокируется. Аудит build environment ничего не устанавливает.
 
 ### Проверка UEFI на DIGMA из Linux Live
 
@@ -75,8 +80,8 @@ cat /sys/firmware/efi/fw_platform_size
 
 ### Диагностика оборудования
 
-См. `docs/HARDWARE_CHECKLIST_RU.md`. Не форматируйте eMMC и не прошивайте
-UEFI на этом этапе. Начинайте с Live USB и резервной копии важных данных.
+См. `docs/HARDWARE_CHECKLIST_RU.md`. Не форматируйте eMMC и не меняйте прошивку
+ради диагностики. Начинайте с Live USB и резервной копии важных данных.
 
 ### Ветка
 
