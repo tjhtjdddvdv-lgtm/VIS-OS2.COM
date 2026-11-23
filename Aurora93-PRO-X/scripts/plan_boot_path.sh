@@ -7,9 +7,39 @@ usage(){ echo "Usage: $0 HARDWARE_REPORT.txt" >&2; }
 [[ $# -eq 1 ]] || { usage; exit 2; }
 report="$1"
 [[ -f "$report" && -r "$report" ]] || { echo "BLOCKED: report is missing or unreadable: $report" >&2; exit 2; }
-field(){ local key="$1"; awk -v key="$key" 'index($0,key ": ")==1 {print substr($0,length(key)+3); exit}' "$report"; }
-vendor="$(field 'System vendor')"; product="$(field 'Product name')"
-lm="$(field 'CPU long-mode flag (lm)')"; fw_iface="$(field 'UEFI sysfs interface')"; fw_arch="$(field 'Firmware architecture')"
+
+expected_header='VIS OS Aurora 93 PRO X — DIGMA Citi 1804 hardware report'
+IFS= read -r header < "$report" || header=''
+[[ "$header" == "$expected_header" ]] || {
+  echo "BLOCKED: report signature does not match the Stage 105 DIGMA hardware report." >&2
+  exit 3
+}
+
+# Require exactly one non-empty instance of each consumed field. This prevents
+# a malformed report from hiding contradictory duplicate values after the first.
+field(){
+ local key="$1" count value
+ count="$(awk -v key="$key" 'index($0,key ": ")==1 {n++} END {print n+0}' "$report")"
+ [[ "$count" == 1 ]] || {
+  echo "BLOCKED: expected exactly one '$key' field, found $count." >&2
+  return 1
+ }
+ value="$(awk -v key="$key" 'index($0,key ": ")==1 {print substr($0,length(key)+3); exit}' "$report")"
+ [[ -n "$value" ]] || {
+  echo "BLOCKED: field '$key' is empty." >&2
+  return 1
+ }
+ printf '%s' "$value"
+}
+
+vendor="$(field 'System vendor')"
+product="$(field 'Product name')"
+lm="$(field 'CPU long-mode flag (lm)')"
+fw_iface="$(field 'UEFI sysfs interface')"
+fw_arch=''
+if [[ "$fw_iface" == 'present' ]]; then
+ fw_arch="$(field 'Firmware architecture')"
+fi
 norm(){ printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | tr -s '[:space:]' ' '; }
 vendor_n="$(norm "$vendor")"; product_n="$(norm "$product")"
 if [[ "$vendor_n" != *digma* || ( "$product_n" != *"citi 1804"* && "$product_n" != *"citi1804"* ) ]]; then
