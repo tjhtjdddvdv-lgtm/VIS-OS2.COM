@@ -78,6 +78,7 @@ fi
 printf '[PASS] IA32 UEFI and x86_64 CPU are reported separately\n'
 printf '[PASS] DMI/MMC/PCI/USB/input/network/audio/camera/battery/IIO/DRM inventory\n'
 printf '[PASS] serial number and MAC values are omitted\n'
+printf '[PASS] IIO axes, raw samples, scale and mount matrix are inventoried; rotation remains disabled\n'
 
 printf '64\n' > "$sys/firmware/efi/fw_platform_size"
 report64="$(run_report)"
