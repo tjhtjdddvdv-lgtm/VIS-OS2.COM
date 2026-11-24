@@ -105,6 +105,18 @@ Capability `SW_TABLET_MODE=yes` означает только то, что input
 режима блокируется до выяснения причины. Подробности:
 `Aurora93-PRO-X/docs/CONVERTIBLE_SWITCH_DIAGNOSTICS_RU.md`.
 
+## Stage 111: чтение текущего состояния EV_SW
+
+Stage 110 показывает capability `SW_LID`/`SW_TABLET_MODE`, но capability не является текущим состоянием. Новый read-only probe запрашивает `EVIOCGSW` у соответствующих `/dev/input/eventX` и отдельно показывает `unknown`, `incomplete` и `conflict`.
+
+```bash
+python3 Aurora93-PRO-X/tests/test_probe_convertible_switch_state.py
+python3 Aurora93-PRO-X/scripts/probe_convertible_switch_state.py
+```
+
+Если нет прав на чтение input event nodes, запустите только диагностический probe через `sudo`. Согласованный результат всё равно не включает автоматический режим UI: сначала требуется физическая проверка складывания/раскладывания DIGMA Citi 1804.
+
+Описание и ограничения: `docs/CURRENT_SWITCH_STATE_DIAGNOSTICS_RU.md`.
 ## Проверка UEFI на DIGMA из Linux Live
 
 ```bash
