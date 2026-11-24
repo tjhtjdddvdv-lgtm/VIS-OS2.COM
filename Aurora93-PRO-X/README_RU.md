@@ -117,6 +117,19 @@ python3 Aurora93-PRO-X/scripts/probe_convertible_switch_state.py
 Если нет прав на чтение input event nodes, запустите только диагностический probe через `sudo`. Согласованный результат всё равно не включает автоматический режим UI: сначала требуется физическая проверка складывания/раскладывания DIGMA Citi 1804.
 
 Описание и ограничения: `docs/CURRENT_SWITCH_STATE_DIAGNOSTICS_RU.md`.
+## Stage 112: целостность инвентаризации switch-capability
+
+Проверка Stage 111 теперь не скрывает event-узлы с повреждённым или недоступным
+capabilities/sw: отчёт помечает инвентаризацию как incomplete и перечисляет
+причины. Чистый нулевой bitmap остаётся корректным результатом без switch-событий.
+
+    python3 -m py_compile Aurora93-PRO-X/scripts/probe_convertible_switch_state.py Aurora93-PRO-X/tests/test_probe_convertible_switch_state.py
+    python3 Aurora93-PRO-X/tests/test_probe_convertible_switch_state.py
+    python3 Aurora93-PRO-X/scripts/probe_convertible_switch_state.py
+
+Описание: Aurora93-PRO-X/docs/SWITCH_INVENTORY_VALIDATION_RU.md.
+Это только диагностика; Auto и режимы рабочего стола не меняются.
+
 ## Проверка UEFI на DIGMA из Linux Live
 
 ```bash
