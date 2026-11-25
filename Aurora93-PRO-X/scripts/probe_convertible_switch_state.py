@@ -77,7 +77,8 @@ def _aggregate(values: list[bool], unavailable: int) -> str:
     return f"{next(iter(labels))} ({len(values)} readable; all advertised devices queried)"
 
 def collect_report(sys_root: Path, dev_root: Path, *, open_fn: Callable = os.open,
-                   ioctl_fn: Callable = fcntl.ioctl, close_fn: Callable = os.close) -> str:
+                   ioctl_fn: Callable = fcntl.ioctl, close_fn: Callable = os.close,
+                   scandir_fn: Callable = os.scandir) -> str:
     lines = [
         "VIS OS Aurora 93 PRO X — current convertible switch state",
         "Read-only EVIOCGSW probe; no input events are consumed and no device state is changed.",
@@ -89,9 +90,29 @@ def collect_report(sys_root: Path, dev_root: Path, *, open_fn: Callable = os.ope
     found = 0
     inventory_warnings: list[str] = []
 
-    for event_dir in sorted((sys_root / "class/input").glob("event*")):
-        if not event_dir.is_dir():
-            continue
+    # Do not use Path.glob() here: a missing/unreadable sysfs input root can
+    # otherwise look like a valid empty inventory on some Python/platforms.
+    input_root = sys_root / "class/input"
+    event_dirs: list[Path] = []
+    try:
+        with scandir_fn(input_root) as entries:
+            for entry in entries:
+                if not entry.name.startswith("event"):
+                    continue
+                try:
+                    if entry.is_dir(follow_symlinks=True):
+                        event_dirs.append(Path(entry.path))
+                    else:
+                        inventory_warnings.append(
+                            f"{entry.name} event_dir=not-directory")
+                except OSError as exc:
+                    inventory_warnings.append(
+                        f"{entry.name} event_dir=unreadable({type(exc).__name__})")
+    except OSError as exc:
+        inventory_warnings.append(
+            f"input inventory=unreadable({type(exc).__name__})")
+
+    for event_dir in sorted(event_dirs):
         caps_path = event_dir / "device/capabilities/sw"
         try:
             caps_text = caps_path.read_text(encoding="ascii").strip()

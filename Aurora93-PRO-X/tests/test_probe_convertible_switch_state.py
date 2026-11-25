@@ -64,6 +64,8 @@ class SwitchProbeTests(unittest.TestCase):
             (base / "name").write_text(name + "\n", encoding="utf-8")
             (base / "capabilities").mkdir()
             (base / "capabilities/sw").write_text(mask + "\n", encoding="ascii")
+        if not entries:
+            (sys_root / "class/input").mkdir(parents=True)
         dev_root.mkdir(parents=True)
         return sys_root, dev_root
 
@@ -121,6 +123,33 @@ class SwitchProbeTests(unittest.TestCase):
             report = probe.collect_report(sys_root, dev_root)
             self.assertIn("event7 capabilities=unreadable(FileNotFoundError)", report)
             self.assertIn("No valid switch capability entries found; inventory incomplete.", report)
+
+    def test_missing_input_sysfs_root_marks_inventory_incomplete(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            sys_root = root / "sys"
+            dev_root = root / "dev/input"
+            dev_root.mkdir(parents=True)
+            report = probe.collect_report(sys_root, dev_root)
+            self.assertIn("input inventory=unreadable(FileNotFoundError)", report)
+            self.assertIn("Switch capability inventory: incomplete (1 warning(s))", report)
+            self.assertNotIn("No input event device advertises", report)
+
+    def test_scandir_permission_error_marks_inventory_incomplete(self):
+        with tempfile.TemporaryDirectory() as temp:
+            sys_root, dev_root = self._fixture(Path(temp), [])
+            report = probe.collect_report(
+                sys_root, dev_root,
+                scandir_fn=Mock(side_effect=PermissionError(errno.EACCES, "denied")))
+            self.assertIn("input inventory=unreadable(PermissionError)", report)
+            self.assertIn("Switch capability inventory: incomplete (1 warning(s))", report)
+
+    def test_empty_but_readable_input_root_is_a_complete_inventory(self):
+        with tempfile.TemporaryDirectory() as temp:
+            sys_root, dev_root = self._fixture(Path(temp), [])
+            report = probe.collect_report(sys_root, dev_root)
+            self.assertIn("Switch capability inventory: complete (0 warning(s))", report)
+            self.assertIn("No input event device advertises", report)
 
     def test_devices_without_switch_capabilities_are_not_probed(self):
         with tempfile.TemporaryDirectory() as temp:

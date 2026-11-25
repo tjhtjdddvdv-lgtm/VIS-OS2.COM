@@ -130,6 +130,23 @@ capabilities/sw: отчёт помечает инвентаризацию как
 Описание: Aurora93-PRO-X/docs/SWITCH_INVENTORY_VALIDATION_RU.md.
 Это только диагностика; Auto и режимы рабочего стола не меняются.
 
+## Stage 113: надёжность перечисления sysfs input
+
+Проверка Stage 112 использовала `Path.glob()` для поиска `/sys/class/input/event*`.
+Если корень `/sys/class/input` отсутствовал или не читался, пустой результат
+мог быть ошибочно принят за полную инвентаризацию без switch-устройств. Теперь
+сборщик использует `os.scandir()` и помечает недоступный корень, ошибки
+перечисления и некорректные event-узлы как `incomplete`.
+
+```bash
+python3 -m py_compile Aurora93-PRO-X/scripts/probe_convertible_switch_state.py Aurora93-PRO-X/tests/test_probe_convertible_switch_state.py
+python3 Aurora93-PRO-X/tests/test_probe_convertible_switch_state.py
+python3 Aurora93-PRO-X/scripts/probe_convertible_switch_state.py
+```
+
+Проверки используют временное sysfs-дерево и искусственную ошибку доступа;
+они не подтверждают наличие hinge-сенсора на DIGMA Citi 1804.
+
 ## Проверка UEFI на DIGMA из Linux Live
 
 ```bash
