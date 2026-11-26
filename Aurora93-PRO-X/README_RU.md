@@ -180,21 +180,21 @@ cat /sys/firmware/efi/fw_platform_size
 
 ## Stage 114: запись переходов Laptop/Tablet
 
-Новый read-only монитор повторяет существующий \`EVIOCGSW\` probe и записывает
-первый снимок и только изменившиеся отчёты. Он не читает очередь \`input_event\`,
+Новый read-only монитор повторяет существующий `EVIOCGSW` probe и записывает
+первый снимок и только изменившиеся отчёты. Он не читает очередь `input_event`,
 не меняет sysfs и не переключает режим интерфейса.
 
-\`\`\`bash
-sudo python3 Aurora93-PRO-X/scripts/monitor_convertible_switch.py \\
-  --interval 0.5 --duration 180 \\
+```bash
+sudo python3 Aurora93-PRO-X/scripts/monitor_convertible_switch.py \
+  --interval 0.5 --duration 180 \
   | tee VIS_OS_CITI1804_SWITCH_TRACE.txt
 python3 Aurora93-PRO-X/tests/test_monitor_convertible_switch.py
-\`\`\`
+```
 
 После записи медленно переведите DIGMA из положения ноутбука в положение
 планшета и обратно. Отправьте трассу для сопоставления с физическим движением.
-\`unknown\`, \`incomplete\` или \`conflict\` не разрешают автоматический режим.
-Подробности: \`docs/SWITCH_TRANSITION_CAPTURE_RU.md\`.
+`unknown`, `incomplete` или `conflict` не разрешают автоматический режим.
+Подробности: `docs/SWITCH_TRANSITION_CAPTURE_RU.md`.
 
 Это диагностический этап: Stage 101/102 UI и приложения не изменялись;
 автоматическое переключение, ISO и работа на физическом DIGMA не подтверждены.
