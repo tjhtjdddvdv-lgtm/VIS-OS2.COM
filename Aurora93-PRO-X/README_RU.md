@@ -198,3 +198,21 @@ python3 Aurora93-PRO-X/tests/test_monitor_convertible_switch.py
 
 Это диагностический этап: Stage 101/102 UI и приложения не изменялись;
 автоматическое переключение, ISO и работа на физическом DIGMA не подтверждены.
+
+
+## Stage 115: мониторинг platform tablet_mode
+
+Stage 114 записывал только `EVIOCGSW`. Теперь монитор также читает прямые
+read-only sysfs-атрибуты `tablet_mode` в `/sys/devices/platform/*` и
+`/sys/bus/platform/devices/*`. Повторяющиеся bus symlink удаляются, ссылки за
+пределы `--sys-root` отклоняются, неизвестные значения и ошибки маркируются как
+incomplete. Автоматический режим по-прежнему не включается.
+
+```bash
+python3 -m py_compile Aurora93-PRO-X/scripts/probe_platform_tablet_mode.py Aurora93-PRO-X/scripts/monitor_convertible_switch.py Aurora93-PRO-X/tests/test_probe_platform_tablet_mode.py Aurora93-PRO-X/tests/test_monitor_convertible_switch.py
+python3 Aurora93-PRO-X/tests/test_probe_platform_tablet_mode.py
+python3 Aurora93-PRO-X/tests/test_monitor_convertible_switch.py
+python3 Aurora93-PRO-X/scripts/probe_platform_tablet_mode.py
+```
+
+Описание и инструкция физического захвата: `docs/SWITCH_TRANSITION_CAPTURE_RU.md`.

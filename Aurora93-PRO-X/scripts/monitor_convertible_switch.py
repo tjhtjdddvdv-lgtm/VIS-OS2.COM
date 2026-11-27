@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Poll read-only EVIOCGSW diagnostics and print only changed snapshots."""
+"""Poll read-only EVIOCGSW and platform tablet_mode diagnostics."""
 from __future__ import annotations
 
 import argparse
@@ -8,6 +8,19 @@ import time
 from datetime import datetime
 from pathlib import Path
 from typing import Callable
+
+
+def collect_snapshot(
+    sys_root: Path,
+    dev_root: Path,
+    *,
+    switch_report_fn: Callable[[Path, Path], str],
+    platform_report_fn: Callable[[Path], str],
+) -> str:
+    """Combine input-switch and platform-sysfs state into one poll snapshot."""
+    switch_report = switch_report_fn(sys_root, dev_root).rstrip()
+    platform_report = platform_report_fn(sys_root).rstrip()
+    return f"{switch_report}\n\n{platform_report}\n"
 
 
 def run_monitor(
@@ -68,13 +81,18 @@ def main(argv: list[str] | None = None) -> int:
     if args.duration <= 0:
         parser.error("--duration must be greater than zero")
 
-    # When executed as a script, its directory is sys.path[0]. Keep the
-    # existing EVIOCGSW implementation as the single source of truth.
-    from probe_convertible_switch_state import collect_report
+    # Keep the existing EVIOCGSW implementation as the single source of truth.
+    from probe_convertible_switch_state import collect_report as collect_switch_report
+    from probe_platform_tablet_mode import collect_platform_report
 
     try:
         count = run_monitor(
-            lambda: collect_report(args.sys_root, args.dev_root),
+            lambda: collect_snapshot(
+                args.sys_root,
+                args.dev_root,
+                switch_report_fn=collect_switch_report,
+                platform_report_fn=collect_platform_report,
+            ),
             interval=args.interval,
             duration=args.duration,
         )
