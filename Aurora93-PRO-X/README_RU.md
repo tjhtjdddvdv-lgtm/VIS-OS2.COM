@@ -216,3 +216,21 @@ python3 Aurora93-PRO-X/scripts/probe_platform_tablet_mode.py
 ```
 
 Описание и инструкция физического захвата: `docs/SWITCH_TRANSITION_CAPTURE_RU.md`.
+
+## Stage 116: офлайн-проверка трассы Laptop/Tablet
+
+После записи Stage 115 проверь сохранённую трассу без доступа к устройствам:
+
+```bash
+python3 Aurora93-PRO-X/scripts/validate_convertible_trace.py \
+  VIS_OS_CITI1804_SWITCH_TRACE.txt
+python3 Aurora93-PRO-X/tests/test_validate_convertible_trace.py
+```
+
+`PASS` требует полной инвентаризации обоих источников, совпадения состояний в
+каждом снимке и полного цикла `laptop -> tablet -> laptop`. `INCOMPLETE` или
+`REJECTED` не разрешают Auto Mode. Даже `PASS` не заменяет физическую проверку
+hinge-сигнала и повторение цикла на DIGMA Citi 1804.
+
+Описание: `docs/SWITCH_TRACE_VALIDATION_RU.md`. Stage 116 не включает
+автоматическое переключение и не меняет Stage 101/102 UI.
